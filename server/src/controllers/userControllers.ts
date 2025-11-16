@@ -3,11 +3,23 @@ import createHttpError, { InternalServerError } from "http-errors";
 import User from "../model/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { FRONTEND_URL, JWT_KEY, resend } from "../config";
+import { FRONTEND_URL, JWT_KEY } from "../config";
 
 import FormData from "form-data";
 import Mailgun from "mailgun.js";
 
+// --------------------------------------------------
+// MAILGUN CLIENT
+// --------------------------------------------------
+const mailgun = new Mailgun(FormData);
+const mg = mailgun.client({
+  username: "api",
+  key: process.env.MAILGUN_API_KEY!,
+});
+
+// --------------------------------------------------
+// SIGNUP USER
+// --------------------------------------------------
 export const signupUser: RequestHandler = async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
 
@@ -31,6 +43,9 @@ export const signupUser: RequestHandler = async (req, res, next) => {
   }
 };
 
+// --------------------------------------------------
+// SIGNIN USER
+// --------------------------------------------------
 export const signinUser: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -66,6 +81,9 @@ export const signinUser: RequestHandler = async (req, res, next) => {
   }
 };
 
+// --------------------------------------------------
+// SEND VERIFICATION MAIL
+// --------------------------------------------------
 export const sendVerificationMail: RequestHandler = async (req, res, next) => {
   const { email }: { email: string } = req.body;
 
@@ -82,27 +100,32 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
       expiresIn: "60m",
     });
 
-    // MAILGUN SETUP
-    // -----------------------------
-    const mailgun = new Mailgun(FormData);
-    const mg = mailgun.client({
-      username: "api",
-      key: process.env.MAILGUN_API_KEY!,
-      // If your domain is EU-based, uncomment:
-      // url: "https://api.eu.mailgun.net",
-    });
-
     // SEND VERIFICATION EMAIL
-    // -----------------------------
     await mg.messages.create(process.env.MAILGUN_DOMAIN!, {
-      from: process.env.MAILGUN_FROM_EMAIL,
-      subject: "Email Verification",
+      from: process.env.MAILGUN_FROM_EMAIL!,
+      to: email,
+      subject: "Verify Your Email",
       html: `
-          Your Verification Link:
-          <a href="https://dashboardauth-production.up.railway.app/user/email-verify/${jwtToken}">
-            Click Here
-          </a>
-        `,
+      <div style="font-family: Arial; background:#f5f5f5; padding:20px;">
+        <div style="max-width:600px; margin:auto; background:white; padding:25px; border-radius:8px;">
+          <h2 style="text-align:center; color:#4f46e5;">Verify Your Email</h2>
+          <p>Hello ${user.firstName},</p>
+          <p>Click the button below to verify your email:</p>
+
+          <div style="text-align:center; margin:25px 0;">
+            <a href="https://dashboardauth-production.up.railway.app/user/email-verify/${jwtToken}"
+              style="background:#4f46e5; color:white; padding:12px 22px; border-radius:6px; text-decoration:none;">
+              Verify Email
+            </a>
+          </div>
+
+          <p style="color:#555;">Or copy this link:</p>
+          <p style="font-size:14px; color:#4f46e5;">
+            https://dashboardauth-production.up.railway.app/user/email-verify/${jwtToken}
+          </p>
+        </div>
+      </div>
+      `,
     });
 
     await user.updateOne({ $set: { verifyToken: encryptedToken } });
@@ -114,27 +137,52 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
   }
 };
 
+// --------------------------------------------------
+// SEND FORGOT PASSWORD MAIL
+// --------------------------------------------------
 export const sendForgotPasswordMail: RequestHandler = async (
   req,
   res,
   next
 ) => {
   const { email }: { email: string } = req.body;
+
   try {
     const user = await User.findOne({ email });
     if (!user) return next(createHttpError(404, "Email Not Valid!"));
 
     const encryptedToken = await bcrypt.hash(user._id.toString(), 8);
-
     const jwtToken = jwt.sign({ userId: user._id }, JWT_KEY, {
       expiresIn: "60m",
     });
 
-    await resend.emails.send({
-      from: "hello.chouglesami@gmail.com",
+    // SEND EMAIL USING MAILGUN
+    await mg.messages.create(process.env.MAILGUN_DOMAIN!, {
+      from: process.env.MAILGUN_FROM_EMAIL!,
       to: email,
-      subject: "Forgot Password Verification",
-      html: `Reset your password <a href="${FRONTEND_URL}/forgot-password-verify/${jwtToken}">Click Here</a>`,
+      subject: "Reset Your Password",
+      html: `
+      <div style="font-family: Arial; background:#f5f5f5; padding:20px;">
+        <div style="max-width:600px; margin:auto; background:white; padding:25px; border-radius:8px;">
+          <h2 style="text-align:center; color:#d62828;">Reset Password</h2>
+
+          <p>Hello ${user.firstName},</p>
+          <p>You requested to reset your password.</p>
+
+          <div style="text-align:center; margin:25px 0;">
+            <a href="${FRONTEND_URL}/forgot-password-verify/${jwtToken}"
+              style="background:#d62828; color:white; padding:12px 22px; border-radius:6px; text-decoration:none;">
+              Reset Password
+            </a>
+          </div>
+
+          <p style="color:#555;">Or copy this link:</p>
+          <p style="font-size:14px; color:#d62828;">
+            ${FRONTEND_URL}/forgot-password-verify/${jwtToken}
+          </p>
+        </div>
+      </div>
+      `,
     });
 
     await user.updateOne({ $set: { verifyToken: encryptedToken } });
@@ -146,6 +194,9 @@ export const sendForgotPasswordMail: RequestHandler = async (
   }
 };
 
+// --------------------------------------------------
+// VERIFY USER MAIL
+// --------------------------------------------------
 export const verifyUserMail: RequestHandler = async (req, res, next) => {
   const { token }: { token: string } = req.body;
 
@@ -166,6 +217,9 @@ export const verifyUserMail: RequestHandler = async (req, res, next) => {
   }
 };
 
+// --------------------------------------------------
+// VERIFY FORGOT MAIL
+// --------------------------------------------------
 export const verifyForgotMail: RequestHandler = async (req, res, next) => {
   const { token, password }: { token: string; password: string } = req.body;
 
