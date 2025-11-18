@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // local frontend
-      "https://dashboard-auth-drab.vercel.app", // your Vercel domain
+      "https://samichougle-react-auth-drab.vercel.app", // your Vercel domain
     ],
     credentials: true,
   })
