@@ -107,10 +107,36 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
       subject: "Verify Your Email",
       "h:Content-Type": "text/html; charset=UTF-8",
       html: `
-      <a href="https://dashboardauth-production.up.railway.app/user/email-verify/${jwtToken}" target="_blank">
-    Click here to verify your email
-  </a>
-     
+      <div style="font-family: Arial; background:#f5f5f5; padding:20px;">
+        <div style="max-width:600px; margin:auto; background:white; padding:25px; border-radius:8px;">
+          <h2 style="text-align:center; color:#4f46e5;">Verify Your Email</h2>
+          <p>Hello ${user.firstName},</p> 
+          <p>Click the button below to verify your email:</p>
+<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin: 25px auto;">
+  <tr>
+    <td 
+      bgcolor="#4f46e5" 
+      style="border-radius: 6px; 
+             font-size: 16px; 
+             text-align: center; 
+             padding: 12px 18px;">
+      <a 
+        href="https://dashboardauth-production.up.railway.app/user/email-verify/${jwtToken}"
+        target="_blank"
+        style="color: #ffffff; 
+               text-decoration: none; 
+               font-weight: bold; 
+               display: inline-block;">
+        Verify Email
+      </a>
+    </td>
+  </tr>
+</table>
+
+
+
+        </div>
+      </div>
       `,
     });
 
