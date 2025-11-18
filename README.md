@@ -1,4 +1,4 @@
-# Dashboard Authentication App
+# React Authentication App
 
 A full-stack authentication system built with React, Node.js, and MongoDB.  
 Includes secure user signup, login, email verification, JWT authentication, and password reset functionality.
@@ -58,3 +58,4 @@ This project simulates a real-world authentication system where:
 ## Learning Goal
 
 This was built as part of my full-stack learning journey to understand how authentication works across frontend and backend in modern applications.
+
