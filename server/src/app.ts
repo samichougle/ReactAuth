@@ -28,6 +28,7 @@ kPassport(passport);
 
 app.use("/", exampleRoute);
 app.use("/user", userRoute);
+app.use("/user", verifyRoute);
 
 // app.use(() => {
 //   throw createHttpError(404, "Route not found");
@@ -46,5 +47,3 @@ mongoose
   .catch(() => {
     throw createHttpError(501, "Unable to connect database");
   });
-
-app.use("/user", verifyRoute);
