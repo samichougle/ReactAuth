@@ -173,6 +173,7 @@ export const sendForgotPasswordMail: RequestHandler = async (
       from: process.env.MAILGUN_FROM_EMAIL!,
       to: email,
       subject: "Reset Your Password",
+      "h:Content-Type": "text/html; charset=UTF-8",
       html: `
       <div style="font-family: Arial; background:#f5f5f5; padding:20px;">
         <div style="max-width:600px; margin:auto; background:white; padding:25px; border-radius:8px;">
@@ -181,12 +182,27 @@ export const sendForgotPasswordMail: RequestHandler = async (
           <p>Hello ${user.firstName},</p>
           <p>You requested to reset your password.</p>
 
-          <div style="text-align:center; margin:25px 0;">
-            <a href="${FRONTEND_URL}/forgot-password-verify/${jwtToken}"
-              style="background:#d62828; color:white; padding:12px 22px; border-radius:6px; text-decoration:none;">
-              Reset Password
-            </a>
-          </div>
+          <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin: 25px auto;">
+  <tr>
+    <td 
+      bgcolor="#4f46e5" 
+      style="border-radius: 6px; 
+             font-size: 16px; 
+             text-align: center; 
+             padding: 12px 18px;">
+      <a 
+        href="${FRONTEND_URL}/forgot-password-verify/${jwtToken}"
+        target="_blank"
+        style="color: #ffffff; 
+               text-decoration: none; 
+               font-weight: bold; 
+               display: inline-block;">
+        Verify Email
+      </a>
+    </td>
+  </tr>
+</table>
+
 
           <p style="color:#555;">Or copy this link:</p>
           <p style="font-size:14px; color:#d62828;">
