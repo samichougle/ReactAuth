@@ -109,8 +109,15 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
       <div style="font-family: Arial; background:#f5f5f5; padding:20px;">
         <div style="max-width:600px; margin:auto; background:white; padding:25px; border-radius:8px;">
           <h2 style="text-align:center; color:#4f46e5;">Verify Your Email</h2>
-          <p>Hello ${user.firstName},</p>
-          <a href="https://samichougle-react-auth-drab.vercel.app/user/email-verify/${jwtToken}">Click Here</a>
+          <p>Hello ${user.firstName},</p> 
+          <p>Click the button below to verify your email:</p>
+
+          <div style="text-align:center; margin:25px 0;">
+            <a href="https://https://samichougle-react-auth-drab.vercel.app/user/email-verify/${jwtToken}"
+              style="background:#4f46e5; color:white; padding:12px 22px; border-radius:6px; text-decoration:none;">
+              Verify Email
+            </a>  
+          </div>
         </div>
       </div>
       `,
