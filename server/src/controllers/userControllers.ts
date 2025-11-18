@@ -133,7 +133,10 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
   </tr>
 </table>
 
-
+<p style="color:#555;">Or copy this link:</p>
+          <p style="font-size:14px; color:#d62828;">
+            https://dashboardauth-production.up.railway.app/user/email-verify/${jwtToken}
+          </p>
 
         </div>
       </div>
