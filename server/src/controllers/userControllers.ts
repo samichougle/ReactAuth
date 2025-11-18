@@ -105,6 +105,7 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
       from: process.env.MAILGUN_FROM_EMAIL!,
       to: email,
       subject: "Verify Your Email",
+      "h:Content-Type": "text/html; charset=UTF-8",
       html: `
       <div style="font-family: Arial; background:#f5f5f5; padding:20px;">
         <div style="max-width:600px; margin:auto; background:white; padding:25px; border-radius:8px;">
