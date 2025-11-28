@@ -5,6 +5,10 @@ Includes secure user signup, login, email verification, JWT authentication, and 
 
 ---
 
+<img width="1155" height="588" alt="Image" src="https://github.com/user-attachments/assets/681e1bb4-abab-44a0-abd6-df3175fa74d2" />
+
+---
+
 ## Features
 
 - User Signup & Login with form validation  
